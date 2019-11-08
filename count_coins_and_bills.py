@@ -25,12 +25,12 @@ def count_coins_and_bills_in_image(filename, show_steps=False):
     img = cv.resize(img,None,fx=0.25,fy=0.25)
     resized_img = img.copy()
     if show_steps:
-        cv.imshow('Resized Original Image', img)
+        cv.imshow('0 - Resized Original Image', img)
 
     # Utilizando blur para amenizar detalhes internos das notas e moedas como números de desenhos
     img = cv.GaussianBlur(img, (BLUR_KERNEL_SIZE, BLUR_KERNEL_SIZE), cv.BORDER_DEFAULT)
     if show_steps:
-        cv.imshow('0.0 - Gaussian Blur', img)
+        cv.imshow('1 - Gaussian Blur', img)
 
     # Aplicando transformada de hough para encontrar círculos na imagem
     all_circles_found = cv.HoughCircles(img, cv.HOUGH_GRADIENT, dp=0.9, minDist=120, param1=10, param2=40, minRadius=30, maxRadius=60)
@@ -45,12 +45,12 @@ def count_coins_and_bills_in_image(filename, show_steps=False):
             # Cada círculo conta como uma moeda
             coins_in_image += 1
         if show_steps:
-            cv.imshow('Drawn circles', resized_img)
+            cv.imshow('2 - Drawn circles', resized_img)
 
 	# Binarizando valores de intensidade
     img = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY_INV, 11, 2)
     if show_steps:
-        cv.imshow('0.0 - Adaptive Gaussian Thresholding', img)
+        cv.imshow('3 - Adaptive Gaussian Thresholding', img)
 
     # Definindo kernel que será utilizado nas operações de morfologia matemática
     kernel = cv.getStructuringElement(cv.MORPH_RECT, (MATH_MORPH_KERNEL_SIZE, MATH_MORPH_KERNEL_SIZE))	
@@ -60,13 +60,13 @@ def count_coins_and_bills_in_image(filename, show_steps=False):
     # essas partes no "blob" da nota
     img = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel, iterations=5)
     if show_steps:
-        cv.imshow('0.2 - Closing', img)
+        cv.imshow('4 - Closing', img)
 	
     # Dilatando as pequenas partes que compõe cada nota para que se juntem e eventualmente
     # seja possível identificar os retângulos das notas
     img = cv.dilate(img, kernel, iterations = 12)
     if show_steps:
-        cv.imshow('0.5 - Dilation', img)
+        cv.imshow('5 - Dilation', img)
 	
     bills_in_image = 0
 
