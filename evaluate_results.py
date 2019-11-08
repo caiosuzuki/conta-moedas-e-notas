@@ -1,7 +1,11 @@
 import os
+import argparse
 from count_coins_and_bills import count_coins_and_bills_in_image
 
-images_directory = './notas-e-moedas-exemplo'
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument("-i", "--img_dir", help="Path to the directory with the input images.")
+args = arg_parser.parse_args()
+images_directory = args.img_dir
 
 hits = misses = 0
 for filename in os.listdir(images_directory):
