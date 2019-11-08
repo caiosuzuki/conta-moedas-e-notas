@@ -5,6 +5,13 @@ KERNEL_SIZE = 3
 DEFAULT_INPUT_IMG_PATH = './notas-e-moedas-exemplo/4c3n.jpg'
 # DEFAULT_INPUT_IMG_PATH = './notas-e-moedas-exemplo/0c3n.jpg'
 
+def calculateAreaOfRect(rect):
+    return rect[1][0] * rect[1][1]
+
+def calculateRectRatio(rect):
+    width = rect[1][0]
+    height = rect[1][1]
+
 def count_coins_and_bills_in_image(filename, show_steps=False):
     bgr_img = cv.imread(filename, 1)
     img = cv.cvtColor(bgr_img, cv.COLOR_BGR2GRAY)
@@ -21,21 +28,16 @@ def count_coins_and_bills_in_image(filename, show_steps=False):
     if show_steps:
         cv.imshow('0.0 - Gaussian Blur', img)
 
-    all_circs = cv.HoughCircles(img, cv.HOUGH_GRADIENT, dp=0.9, minDist=120, param1=10, param2=40, minRadius=30, maxRadius=60)
+    all_circles_found = cv.HoughCircles(img, cv.HOUGH_GRADIENT, dp=0.9, minDist=120, param1=10, param2=40, minRadius=30, maxRadius=60)
 
     coins_in_image = 0
-    if all_circs is not None:
-        all_circs_rounded = np.uint16(np.around(all_circs))
-        for i in all_circs_rounded[0, :]:
+    if all_circles_found is not None:
+        all_circles_found_rounded = np.uint16(np.around(all_circles_found))
+        for i in all_circles_found_rounded[0, :]:
             cv.circle(resized_img, (i[0], i[1]), i[2], (50, 200, 200), 5)
             coins_in_image += 1
         if show_steps:
             cv.imshow('Drawn circles', resized_img)
-        
-    else:
-        print('no circles')
-
-    # return coins_in_image, 0
 
 	# Binarizando valores de intensidade
     # faz parte da estrutura final
@@ -79,25 +81,31 @@ def count_coins_and_bills_in_image(filename, show_steps=False):
 	####
 	# findContours (liga os pontos de mesma intensidade que estão próximos)
     contours, hierarchy = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)    
-    print(f'qtde contours: {len(contours)}')
+    # print(f'qtde contours: {len(contours)}')
     
     for contour in contours:
         rect = cv.minAreaRect(contour)
-        box = cv.boxPoints(rect)
-        box = np.int0(box)
-        resized_img = cv.drawContours(resized_img, [box], 0, (0,255,0), 3)
-        print(type(box))
-        # cv.drawContours(resized_img, contour, -1, (0, 255, 0), 3)
-        # rectArea = ...
-        # if rectArea > 85000 and rectArea < 110000:
-        #     bills_in_image += 1
+        # resized_img = cv.drawContours(resized_img, [box], 0, (0,255,0), 3)
+        # print(f'rect: {rect}')
+        # print(f'box: {box}')
+        rect_area = calculateAreaOfRect(rect)
+        # rect_ratio = calculateRectRatio(rect)
+        # print(f'area: {rect_area}')
+        # TODO: usar ratio para melhorar o critério 
+        if (rect_area > 90000):
+            box = cv.boxPoints(rect)
+            # transformando float para int
+            box = np.int0(box)
+            resized_img = cv.drawContours(resized_img, [box], 0, (0,255,0), 3)
+            bills_in_image += 1
     
-    print(f'bills in image: {bills_in_image}')
-    if show_steps:
+    # print(f'bills in image: {bills_in_image}')
+    if show_steps or True:
         cv.imshow('Drawn contours', resized_img)
-	
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+    
+    return coins_in_image, bills_in_image
 
 if __name__ == "__main__":
 	count_coins_and_bills_in_image(DEFAULT_INPUT_IMG_PATH, show_steps=True)
