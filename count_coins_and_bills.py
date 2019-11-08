@@ -91,6 +91,7 @@ def count_coins_and_bills_in_image(filename, show_steps=False):
         cv.imshow(f'Coins and bills: {filename}', resized_img)
         cv.waitKey(0)
         cv.destroyAllWindows()
+        print(f'{coins_in_image}c{bills_in_image}n')
     
     return coins_in_image, bills_in_image
 
