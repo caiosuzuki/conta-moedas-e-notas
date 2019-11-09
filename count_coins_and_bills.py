@@ -4,7 +4,6 @@ import numpy as np
 MATH_MORPH_KERNEL_SIZE = 3
 BLUR_KERNEL_SIZE = 11
 DEFAULT_INPUT_IMG_PATH = './notas-e-moedas-exemplo/0c2n-3.jpg'
-# DEFAULT_INPUT_IMG_PATH = './notas-e-moedas-exemplo/6c3n.jpg'
 
 def calculate_area_of_rect(rect):
     return rect[1][0] * rect[1][1]
