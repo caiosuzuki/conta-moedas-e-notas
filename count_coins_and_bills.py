@@ -38,8 +38,8 @@ def count_coins_and_bills_in_image(filename, show_steps=False):
     # Encontrando círculos que serão considerados como moedas
     coins_in_image = 0
     if all_circles_found is not None:
-        all_circles_found_rounded = np.uint16(np.around(all_circles_found))
-        for circle in all_circles_found_rounded[0, :]:
+        all_circles_found = np.uint16(np.around(all_circles_found))
+        for circle in all_circles_found[0, :]:
             # Desenhando círculo na imagem original
             cv.circle(resized_img, (circle[0], circle[1]), circle[2], (0, 255, 0), 5)
             # Cada círculo conta como uma moeda
